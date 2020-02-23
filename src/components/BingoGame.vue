@@ -2,25 +2,37 @@
   <div id="main-game">
     <header><h1>Silo Banko</h1></header>
     <ul class="panel">
-      <li v-for="n in pickedNumbers" :key="n">{{ n }}</li>
+      <li
+        v-for="n in pickedNumbers"
+        :key="n"
+      >
+        {{ n }}
+      </li>
     </ul>
     <div class="container">
       <div class="bingo_roulette">
-        <p class="bingoNumberDraw">{{ targetNum }}</p>
-        <input
-          :disabled="drawingInProcess"
-          type="button"
-          class="btn"
-          value="SPIN"
+        <p class="bingoNumberDraw">
+          {{ targetNum }}
+        </p>
+        <b-button
+          type="is-primary"
+          :disabled="drawingInProcess" 
           @click="spin"
-        />
-        <input type="button" class="btn" value="RESET" @click="reset" />
+        >
+          Træk et nummer!
+        </b-button>
+        <b-button
+          type="is-light"
+          @click="reset"
+        >
+          Nulstil
+        </b-button>
         <ul class="panel">
           <li
             v-for="num in maxNumbers"
-            :class="[activeClass.white, `number-${num}`]"
             :id="[num]"
             :key="num"
+            :class="[activeClass.white, `number-${num}`]"
           >
             {{ num }}
           </li>
@@ -46,6 +58,9 @@ export default {
       }
     };
   },
+  created() {
+    this.init();
+  },
   methods: {
     init: function() {
       this.numberPool = [...Array(this.maxNumbers).keys()].map(i => ++i);
@@ -58,7 +73,7 @@ export default {
         this.updateNumberPool();
         this.styleNumber();
         this.drawingInProcess = false;
-      }, 1000);
+      }, 3000);
     },
     reset: function() {
       this.targetNum = null;
@@ -101,9 +116,6 @@ export default {
         el.classList.add(this.activeClass.white);
       });
     }
-  },
-  created() {
-    this.init();
   }
 };
 </script>
