@@ -1,32 +1,8 @@
 <template>
   <div id="main-game">
     <header><h1>Silo Banko</h1></header>
-    <ul class="panel">
-      <li
-        v-for="n in pickedNumbers"
-        :key="n"
-      >
-        {{ n }}
-      </li>
-    </ul>
-    <div class="container">
-      <div class="bingo_roulette">
-        <p class="bingoNumberDraw">
-          {{ targetNum }}
-        </p>
-        <b-button
-          type="is-primary"
-          :disabled="drawingInProcess" 
-          @click="spin"
-        >
-          Træk et nummer!
-        </b-button>
-        <b-button
-          type="is-light"
-          @click="reset"
-        >
-          Nulstil
-        </b-button>
+    <div class="columns">
+      <div class="column">
         <ul class="panel">
           <li
             v-for="num in maxNumbers"
@@ -37,6 +13,40 @@
             {{ num }}
           </li>
         </ul>
+      </div>
+      <div class="column">
+        <transition-group
+          name="list"
+          tag="ul"
+          class="panel"
+        >
+          <li
+            v-for="n in lastThree"
+            :key="n"
+          >
+            {{ n }}
+          </li>
+        </transition-group>
+        <div class="container">
+          <div class="bingo_roulette">
+            <p class="bingoNumberDraw">
+              {{ targetNum }}
+            </p>
+            <b-button
+              type="is-primary"
+              :disabled="drawingInProcess" 
+              @click="spin"
+            >
+              Træk et nummer!
+            </b-button>
+            <b-button
+              type="is-light"
+              @click="reset"
+            >
+              Nulstil
+            </b-button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -58,12 +68,20 @@ export default {
       }
     };
   },
+  computed: {
+    lastThree: function() {
+      return this.pickedNumbers.slice().reverse().slice(0, 3);
+    }
+  },
   created() {
     this.init();
   },
   methods: {
     init: function() {
       this.numberPool = [...Array(this.maxNumbers).keys()].map(i => ++i);
+      this.pickedNumbers = [];
+      this.target = null;
+      this.targetNum = null;
     },
     spin: function() {
       this.drawingInProcess = true;
@@ -161,12 +179,12 @@ ul {
   justify-content: center;
 }
 .bingoNumberDraw {
-  width: 70px;
-  height: 70px;
+  width: 250px;
+  height: 250px;
   margin: 0 auto 20px;
   border: 1px solid #333;
   border-radius: 5px;
-  font-size: 40pt;
+  font-size: 150pt;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -193,5 +211,16 @@ ul {
   justify-content: space-around;
   max-width: 980px;
   margin: 50px auto;
+}
+.list-enter-active, .list-leave-active {
+  transition: all 1s;
+}
+.list-enter /* .list-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
 }
 </style>
