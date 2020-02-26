@@ -1,6 +1,5 @@
 <template>
   <div id="main-game">
-    <header><h1>Silo Banko</h1></header>
     <div class="columns">
       <div class="column">
         <ul class="panel">
@@ -18,7 +17,7 @@
         <transition-group
           name="list"
           tag="ul"
-          class="panel"
+          class="panel last_three"
         >
           <li
             v-for="n in lastThree"
@@ -94,10 +93,13 @@ export default {
       }, 3000);
     },
     reset: function() {
+      if (confirm("Vil du nulstille og starte forfra?")) {
       this.targetNum = null;
       this.resetStyleNumber();
 
       this.init();
+        
+      }
     },
     startDrawing: function() {
       this.target = setInterval(() => {
@@ -141,28 +143,10 @@ export default {
 <style>
 #app {
   font-family: Helvetica, Arial, "Avenir", sans-serif;
+  font-size: 30pt;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-}
-.btn {
-  padding: 10px 20px;
-  font-weight: bold;
-  background-color: #f5f5f5;
-  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
-    0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-}
-.btn + .btn {
-  margin-top: 10px;
-}
-.header {
-  padding: 20px;
-  background-color: #333;
-}
-.header > h1 {
-  font-weight: bold;
-  color: #fff;
 }
 ul {
   list-style: none;
@@ -182,8 +166,8 @@ ul {
   width: 250px;
   height: 250px;
   margin: 0 auto 20px;
-  border: 1px solid #333;
-  border-radius: 5px;
+  border-radius: 125px;
+  background-color: lightgray;
   font-size: 150pt;
   display: flex;
   align-items: center;
@@ -191,13 +175,15 @@ ul {
 }
 .panel {
   margin: 0 auto;
-  width: 500px;
+  width: 700px;
   display: flex;
   flex-wrap: wrap;
 }
 .panel > li {
-  width: 50px;
-  height: 50px;
+  font-size: 20pt;
+  width: 70px;
+  height: 70px;
+  border-radius: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -205,6 +191,7 @@ ul {
 .black {
   color: #fff;
   background-color: #333;
+  font-weight: bold;
 }
 .bingo_container {
   display: flex;
@@ -213,14 +200,17 @@ ul {
   margin: 50px auto;
 }
 .list-enter-active, .list-leave-active {
-  transition: all 1s;
+  transition: all 0.5s;
 }
 .list-enter /* .list-leave-active below version 2.1.8 */ {
   opacity: 0;
-  transform: translateX(-30px);
+  transform: translateX(-5px);
 }
 .list-leave-to {
   opacity: 0;
-  transform: translateX(30px);
+  transform: translateX(5px);
+}
+.last_three {
+  align-items: center;
 }
 </style>
