@@ -1,0 +1,14 @@
+// Import Bulma's core
+@import "~bulma/sass/utilities/_all";
+@import url('https://fonts.googleapis.com/css?family=Lobster&display=swap');
+
+$footer-padding: 1rem 1.5rem 1rem;
+$footer-background-color: hsl(0, 0%, 98%);
+
+h1 {
+  font-family: 'Lobster'
+}
+
+  // Import Bulma and Buefy styles
+  @import "~bulma";
+  @import "~buefy/src/scss/buefy";

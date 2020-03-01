@@ -1,50 +1,87 @@
 <template>
-  <div id="main-game">
-    <div class="columns">
-      <div class="column">
-        <ul class="panel">
-          <li
-            v-for="n in numbers"
-            :id="[n.number]"
-            :key="n.number"
-            :class="[`number-${n.number}`, {picked: n.isPicked}]"
+  <div
+    id="main-game"
+    class="tile is-ancestor"
+  >
+    <div
+      id="numbers-column"
+      class="tile is-8"
+    >
+      <ul class="numbers-container">
+        <li
+          v-for="n in numbers"
+          :id="[n.number]"
+          :key="n.number"
+        >
+          <transition
+            name="picked-number"
+          >
+            <div
+              v-if="n.isPicked"
+              :class="['bingo-number', {picked: n.isPicked}]"
+            >
+              {{ n.number }}
+            </div>
+          </transition>
+          <div
+            v-if="!n.isPicked"
+            class="bingo-number"
           >
             {{ n.number }}
-          </li>
-        </ul>
-      </div>
-      <div class="column">
-        <transition-group
-          name="list"
-          tag="ul"
-          class="panel last_three"
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div
+      id="draw-column"
+      class="tile is-4 is-vertical is-parent"
+    >
+      <div
+        class="tile is-child"
+      >
+        <last-three-numbers :numbers="lastThree" />
+        <div
+          class="bingo-roulette"
         >
-          <li
-            v-for="n in lastThree"
-            :key="n"
+          <p
+            :class="[{'reveal-number reveal-number-animation': animateTagetNum}, 'number-draw']"
           >
-            {{ n }}
-          </li>
-        </transition-group>
-        <div class="container">
-          <div class="bingo_roulette">
-            <p class="bingoNumberDraw">
-              {{ targetNum }}
-            </p>
+            {{ targetNum }}
+          </p>
+        </div>
+      </div>
+      <div
+        id="controls"
+        class="tile is-child"
+      >
+        <div>
+          <b-tooltip
+            label="eller tryk [Enter]"
+            position="is-bottom"
+            type="is-light"
+            size="is-small"
+            delay="1000"
+          >
             <b-button
               type="is-primary"
+              size="is-medium"
               :disabled="drawingInProcess" 
+              rounded
+              outlined
+              icon-left="reload"
               @click="spin"
+              @keyup.enter="spin"
             >
               Træk et nummer!
             </b-button>
-            <b-button
-              type="is-light"
-              @click="reset"
-            >
-              Nulstil
-            </b-button>
-          </div>
+          </b-tooltip>
+          <b-button
+            type="is-text"
+            rounded
+            @click="reset"
+          >
+            Nulstil
+          </b-button>
         </div>
       </div>
     </div>
@@ -52,12 +89,17 @@
 </template>
 
 <script>
+import LastThreeNumbers from './LastThreeNumbers.vue'
 export default {
+  components: {
+    LastThreeNumbers
+    },
   data() {
     return {
       drawingInProcess: false,
       target: null,
       targetNum: null,
+      animateTagetNum: false,
       maxNumber: 90,
       numbers: [],
       pickedNumbers: []
@@ -68,13 +110,45 @@ export default {
       return this.pickedNumbers.slice().reverse().slice(0, 3);
     }
   },
+  watch: {
+    numbers: {
+      handler: function(val, oldVal) {
+      localStorage.numbers = JSON.stringify(val);
+      },
+      deep: true
+    },
+    pickedNumbers: {
+      handler: function(val, oldVal) {
+      localStorage.pickedNumbers = JSON.stringify(val);
+      },
+      deep: true
+    }
+  },
+  mounted() {
+      if(localStorage.numbers) {
+        this.numbers = JSON.parse(localStorage.numbers);
+      }
+      if(localStorage.pickedNumbers) {
+        this.pickedNumbers = JSON.parse(localStorage.pickedNumbers);
+      }
+  },
   created() {
     this.init();
+    var vm = this
+    window.addEventListener('keyup', function(event) {
+        if (event.keyCode == 13) { 
+          vm.spin();
+        }
+      });
   },
   methods: {
     init: function() {
-      this.numbers = [...Array(this.maxNumber).keys()].map(i => ({number: ++i, isPicked: false}));
+      if(this.numbers.length === 0) {
+        this.numbers = [...Array(this.maxNumber).keys()].map(i => ({number: ++i, isPicked: false}));
+      }
+      if(this.pickedNumbers.length === 0) {
       this.pickedNumbers = [];
+      }
       this.target = null;
       this.targetNum = null;
     },
@@ -88,10 +162,13 @@ export default {
     },
     reset: function() {
       if (confirm("Vil du nulstille og starte forfra?")) {
-      this.targetNum = null;
-
-      this.init();
-        
+        this.target = null;
+        this.targetNum = null;
+        localStorage.removeItem("numbers");
+        localStorage.removeItem("pickedNumbers");
+        this.target = null;
+        this.pickedNumbers = [];
+        this.numbers = [...Array(this.maxNumber).keys()].map(i => ({number: ++i, isPicked: false}));
       }
     },
     startDrawing: function() {
@@ -104,6 +181,10 @@ export default {
     },
     stopDrawing: function() {
       clearInterval(this.target);
+      this.animateTagetNum = true;
+      setTimeout(() => {
+        this.animateTagetNum = false;
+      }, 1000)
       this.numbers[this.targetNum-1].isPicked = true;
       this.pickedNumbers = [...this.pickedNumbers, this.targetNum]
     },
@@ -111,85 +192,113 @@ export default {
 };
 </script>
 
-<style>
-#app {
-  font-family: Helvetica, Arial, "Avenir", sans-serif;
-  font-size: 30pt;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+<style lang="scss" scoped>
+@import "~bulma/sass/utilities/_all";
+
+#controls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+#controls > div {
+  display: flex;
+  align-items: center;
+}
+
+.bingo-roulette {
+  margin-top: 50px;
 }
 ul {
   list-style: none;
   padding: 0;
 }
-.view {
-  margin: 20px auto;
-  width: 50px;
-  height: 50px;
-  color: #fff;
-  background-color: #333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.bingoNumberDraw {
-  width: 250px;
-  height: 250px;
+
+.number-draw {
+  width: 200px;
+  height: 200px;
   margin: 0 auto 20px;
-  border-radius: 125px;
-  background-color: lightgray;
+  border-radius: 100px;
+  background-color: rgba($dark, 0.1);
+  padding-top: 20px;
   font-size: 150pt;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.picked {
-  border-radius: auto;
-  background: #00A99D;
-  color: white;
-  -webkit-box-shadow: 0px 6px 0px #aaa;
-  -moz-box-shadow: 0px 6px 0px #aaa;
-  box-shadow: 0px 6px 0px #aaa;
-}
-.panel {
+.numbers-container {
   margin: 0 auto;
-  width: 700px;
+  border-radius: 30px;
+  padding: 5px;
+  box-shadow: 5px 5px 20px rgba($dark, 0.1);
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-wrap: wrap;
 }
-.panel > li {
+.numbers-container > li {
   font-size: 20pt;
-  width: 70px;
-  height: 70px;
-  border-radius: 35px;
+  width: 10%;
+  padding: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.black {
-  color: #fff;
-  background-color: #333;
-  font-weight: bold;
-}
-.bingo_container {
+.bingo-number {
+  font-size: 20pt;
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  padding-top: 5px;
+  border: 1px solid rgba(#000, 0.2);
   display: flex;
-  justify-content: space-around;
-  max-width: 980px;
-  margin: 50px auto;
-}
-.list-enter-active, .list-leave-active {
-  transition: all 0.5s;
-}
-.list-enter /* .list-leave-active below version 2.1.8 */ {
-  opacity: 0;
-  transform: translateX(-5px);
-}
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(5px);
-}
-.last_three {
   align-items: center;
+  justify-content: center;
 }
+.picked {
+  background: $primary;
+  color: white;
+  font-weight: bold;
+  -webkit-box-shadow: 2px 2px 5px rgba($primary, 0.5);
+  -moz-box-shadow: 2px 2px 5px rgba($primary, 0.5);
+  box-shadow: 2px 2px 5px rgba($primary, 0.5);
+}
+
+.picked-number-enter-active {
+  animation: bounce-in 1.0s;
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+    background-color: $dark;
+    border: 10px rgba($dark, 0.5) solid;
+  }
+  50% {
+    transform: scale(1.4);
+    border: 10px rgba($dark, 0.5) solid;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.reveal-number-animation {
+  animation: reveal-number 1.0s;
+}
+
+@keyframes reveal-number {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+    background-color: rgba($primary, 0.5);
+  }
+  50% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 </style>
