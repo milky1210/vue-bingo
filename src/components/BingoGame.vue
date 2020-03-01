@@ -4,12 +4,12 @@
       <div class="column">
         <ul class="panel">
           <li
-            v-for="num in maxNumbers"
-            :id="[num]"
-            :key="num"
-            :class="[activeClass.white, `number-${num}`]"
+            v-for="n in numbers"
+            :id="[n.number]"
+            :key="n.number"
+            :class="[`number-${n.number}`, {picked: n.isPicked}]"
           >
-            {{ num }}
+            {{ n.number }}
           </li>
         </ul>
       </div>
@@ -58,13 +58,9 @@ export default {
       drawingInProcess: false,
       target: null,
       targetNum: null,
-      maxNumbers: 90,
-      numberPool: [],
-      pickedNumbers: [],
-      activeClass: {
-        white: "white",
-        black: "black"
-      }
+      maxNumber: 90,
+      numbers: [],
+      pickedNumbers: []
     };
   },
   computed: {
@@ -77,7 +73,7 @@ export default {
   },
   methods: {
     init: function() {
-      this.numberPool = [...Array(this.maxNumbers).keys()].map(i => ++i);
+      this.numbers = [...Array(this.maxNumber).keys()].map(i => ({number: ++i, isPicked: false}));
       this.pickedNumbers = [];
       this.target = null;
       this.targetNum = null;
@@ -87,15 +83,12 @@ export default {
       this.startDrawing();
       setTimeout(() => {
         this.stopDrawing();
-        this.updateNumberPool();
-        this.styleNumber();
         this.drawingInProcess = false;
       }, 3000);
     },
     reset: function() {
       if (confirm("Vil du nulstille og starte forfra?")) {
       this.targetNum = null;
-      this.resetStyleNumber();
 
       this.init();
         
@@ -103,39 +96,17 @@ export default {
     },
     startDrawing: function() {
       this.target = setInterval(() => {
-        const rndDrawIdx = Math.floor(Math.random() * this.numberPool.length);
-        const draw = this.numberPool[rndDrawIdx];
-        this.targetNum = draw;
+        const availableNumbers = this.numbers.filter(n => !n.isPicked); 
+        const rndDrawIdx =  Math.floor(Math.random() * availableNumbers.length);
+        const draw = availableNumbers[rndDrawIdx];
+        this.targetNum = draw.number;
       }, 100);
     },
     stopDrawing: function() {
       clearInterval(this.target);
+      this.numbers[this.targetNum-1].isPicked = true;
+      this.pickedNumbers = [...this.pickedNumbers, this.targetNum]
     },
-    updateNumberPool: function() {
-      this.numberPool = this.numberPool.filter(num => {
-        return num !== this.targetNum;
-      });
-
-      this.pickedNumbers = [...this.pickedNumbers, this.targetNum];
-    },
-    styleNumber: function() {
-      const targetElements = document.querySelectorAll(
-        `.number-${this.targetNum}`
-      );
-      targetElements.forEach(el => {
-        el.classList.remove(this.activeClass.white);
-        el.classList.add(this.activeClass.black);
-      });
-    },
-    resetStyleNumber: function() {
-      const targetElements = document.querySelectorAll(
-        `.${this.activeClass.black}`
-      );
-      targetElements.forEach(el => {
-        el.classList.remove(this.activeClass.black);
-        el.classList.add(this.activeClass.white);
-      });
-    }
   }
 };
 </script>
@@ -172,6 +143,14 @@ ul {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.picked {
+  border-radius: auto;
+  background: #00A99D;
+  color: white;
+  -webkit-box-shadow: 0px 6px 0px #aaa;
+  -moz-box-shadow: 0px 6px 0px #aaa;
+  box-shadow: 0px 6px 0px #aaa;
 }
 .panel {
   margin: 0 auto;
