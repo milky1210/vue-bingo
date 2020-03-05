@@ -220,7 +220,6 @@ ul {
   border-radius: 100px;
   color: #000;
   background-color: rgba($dark, 0.3);
-  padding-top: 20px;
   font-size: 150pt;
   display: flex;
   align-items: center;
@@ -249,7 +248,7 @@ ul {
   width: 60px;
   height: 60px;
   border-radius: 30px;
-  padding-top: 5px;
+  padding-top: 2px;
   border: 1px solid rgba(#000, 0.5);
   display: flex;
   align-items: center;
