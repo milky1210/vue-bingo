@@ -39,10 +39,11 @@ export default {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
+  background-color: #000;
 }
 .logo {
   margin: 20px;
-  width: 200px;
+  width: 150px;
   
 }
 .footer {
@@ -51,5 +52,7 @@ export default {
 
 #mainstage {
   padding: 3rem;
+  border-radius: 10px;
+  background-color: white;
 }
 </style>

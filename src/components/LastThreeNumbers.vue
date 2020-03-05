@@ -60,7 +60,7 @@ export default {
   border-radius: 50px;
   margin: 5px;
   padding-top: 5px;
-  border: 1px solid rgba(#000, 0.2);
+  border: 1px solid rgba(#000, 0.5);
   display: flex;
   flex-shrink: 0;
   align-items: center;

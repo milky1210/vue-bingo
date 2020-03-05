@@ -218,7 +218,8 @@ ul {
   height: 200px;
   margin: 0 auto 20px;
   border-radius: 100px;
-  background-color: rgba($dark, 0.1);
+  color: #000;
+  background-color: rgba($dark, 0.3);
   padding-top: 20px;
   font-size: 150pt;
   display: flex;
@@ -229,7 +230,7 @@ ul {
   margin: 0 auto;
   border-radius: 30px;
   padding: 5px;
-  box-shadow: 5px 5px 20px rgba($dark, 0.1);
+  box-shadow: 5px 5px 20px rgba($dark, 0.3);
   width: 100%;
   height: 100%;
   display: flex;
@@ -249,7 +250,7 @@ ul {
   height: 60px;
   border-radius: 30px;
   padding-top: 5px;
-  border: 1px solid rgba(#000, 0.2);
+  border: 1px solid rgba(#000, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -291,7 +292,7 @@ ul {
   0% {
     opacity: 0;
     transform: scale(0.8);
-    background-color: rgba($primary, 0.5);
+    background-color: rgba($primary, 1);
   }
   50% {
     transform: scale(1.4);
