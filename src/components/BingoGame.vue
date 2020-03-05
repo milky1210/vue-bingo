@@ -219,6 +219,7 @@ ul {
   margin: 0 auto 20px;
   border-radius: 100px;
   color: #000;
+  padding-top: 10px;
   background-color: rgba($dark, 0.3);
   font-size: 150pt;
   display: flex;

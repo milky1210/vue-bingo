@@ -1,6 +1,5 @@
 <template>
   <div
-    v-show="numbers.length != 0"
     id="component"
     class="container"
   >
