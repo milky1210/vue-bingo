@@ -76,9 +76,11 @@ export default {
 
 @keyframes ease-in {
   0% {
+    margin-left: -70px;;
     opacity: 0;
     transform: scale(0);
     border: solid rgba($primary, 0.5) 10px;
+    
   }
   100% {
     transform: scale(1);
