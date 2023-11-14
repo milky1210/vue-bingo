@@ -13,22 +13,44 @@
           :id="[n.number]"
           :key="n.number"
         >
-          <transition
-            name="picked-number"
-          >
-            <div
-              v-if="n.isPicked"
-              :class="['bingo-number', {picked: n.isPicked}]"
+          <transition name="fade">
+            <button
+              v-if="!n.isPicked"
+              class="bingo-number"
+              @click="n.isPicked = editable !== n.isPicked"
             >
               {{ n.number }}
-            </div>
+            </button>
+            <button
+              v-else
+              :class="['bingo-number', {picked: n.isPicked}]"
+              @click="n.isPicked = editable !== n.isPicked"
+            >
+              {{ n.number }}
+            </button>
           </transition>
-          <div
-            v-if="!n.isPicked"
-            class="bingo-number"
-          >
-            {{ n.number }}
-          </div>
+        </li>
+        <li
+          v-for="n in presents"
+          :id="[n.number]"
+          :key="n.number"
+        >
+          <transition name="fade">
+            <button
+              v-if="!n.isPicked"
+              class="bingo-number"
+              @click="n.isPicked = editable !== n.isPicked"
+            >
+              {{ n.number }}等
+            </button>
+            <button
+              v-else
+              :class="['bingo-number', {picked: n.isPicked}]"
+              @click="n.isPicked = editable !== n.isPicked"
+            >
+              {{ n.number }}等
+            </button>
+          </transition>
         </li>
       </ul>
     </div>
@@ -43,10 +65,8 @@
         <div
           class="bingo-roulette"
         >
-          <p
-            :class="[{'reveal-number reveal-number-animation': animateTagetNum}, 'number-draw']"
-          >
-            {{ targetNum }}
+          <p :class="['number-draw', animateTagetNum ? 'reveal-number reveal-number-animation' : '']">
+            {{ targetNum > 0 ? targetNum : 'Q' }}
           </p>
         </div>
       </div>
@@ -56,7 +76,7 @@
       >
         <div>
           <b-tooltip
-            label="eller tryk [Enter]"
+            label="ビンゴを実行"
             position="is-bottom"
             type="is-light"
             size="is-small"
@@ -68,11 +88,31 @@
               :disabled="drawingInProcess" 
               rounded
               outlined
-              icon-left="reload"
+              icon-left="play"
               @click="spin"
               @keyup.enter="spin"
             >
-              Træk et nummer!
+              ビンゴ
+            </b-button>
+          </b-tooltip>
+          <b-tooltip
+            label="ギフトを実行"
+            position="is-bottom"
+            type="is-light"
+            size="is-small"
+            delay="1000"
+          >
+            <b-button
+              type="red"
+              size="is-small"
+              :disabled="drawingInProcess" 
+              rounded
+              outlined
+              icon-left="gift"
+              @click="spinGift"
+              @keyup.enter="spin"
+            >
+              ギフト
             </b-button>
           </b-tooltip>
           <b-button
@@ -80,7 +120,13 @@
             rounded
             @click="reset"
           >
-            Nulstil
+            初期化
+          </b-button>
+          <b-button
+            rounded
+            @click="editable=!editable"
+          >
+            <b-icon :icon="editable ? 'pencil' : 'lock'" />
           </b-button>
         </div>
       </div>
@@ -100,9 +146,14 @@ export default {
       target: null,
       targetNum: null,
       animateTagetNum: false,
-      maxNumber: 90,
+      maxNumber: 75,
+      maxPresent: 7,
+      quizRate: 0.3,
+      editable: false,
       numbers: [],
-      pickedNumbers: []
+      presents: [],
+      pickedNumbers: [],
+      pickedPresents: []
     };
   },
   computed: {
@@ -146,6 +197,9 @@ export default {
       if(this.numbers.length === 0) {
         this.numbers = [...Array(this.maxNumber).keys()].map(i => ({number: ++i, isPicked: false}));
       }
+      if(this.presents.length === 0) {
+        this.presents = [...Array(this.maxPresent).keys()].map(i => ({number: ++i, isPicked: false}));
+      }
       if(this.pickedNumbers.length === 0) {
       this.pickedNumbers = [];
       }
@@ -160,8 +214,16 @@ export default {
         this.drawingInProcess = false;
       }, 3000);
     },
+    spinGift: function() {
+      this.drawingInProcess = true;
+      this.startDrawingGift();
+      setTimeout(() => {
+        this.stopDrawingGift();
+        this.drawingInProcess = false;
+      }, 3000);
+    },
     reset: function() {
-      if (confirm("Vil du nulstille og starte forfra?")) {
+      if (confirm("初めからにする?")) {
         this.target = null;
         this.targetNum = null;
         localStorage.removeItem("numbers");
@@ -169,6 +231,8 @@ export default {
         this.target = null;
         this.pickedNumbers = [];
         this.numbers = [...Array(this.maxNumber).keys()].map(i => ({number: ++i, isPicked: false}));
+        this.pickedPresents = [];
+        this.presents = [...Array(this.maxPresent).keys()].map(i => ({number: ++i, isPicked: false}));
       }
     },
     startDrawing: function() {
@@ -185,8 +249,30 @@ export default {
       setTimeout(() => {
         this.animateTagetNum = false;
       }, 1000)
+      if (Math.random() < this.quizRate){
+        this.targetNum = 0;
+      }
+      if(this.targetNum>0){
       this.numbers[this.targetNum-1].isPicked = true;
-      this.pickedNumbers = [...this.pickedNumbers, this.targetNum]
+      this.pickedNumbers = [...this.pickedNumbers, this.targetNum];
+      }
+    },
+    startDrawingGift: function() {
+      this.target = setInterval(() => {
+        const availableNumbers = this.presents.filter(n => !n.isPicked); 
+        const rndDrawIdx =  Math.floor(Math.random() * availableNumbers.length);
+        const draw = availableNumbers[rndDrawIdx];
+        this.targetNum = draw.number;
+      }, 100);
+    },
+    stopDrawingGift: function() {
+      clearInterval(this.target);
+      this.animateTagetNum = true;
+      setTimeout(() => {
+        this.animateTagetNum = false;
+      }, 1000)
+      this.presents[this.targetNum-1].isPicked = true;
+      this.pickedPresents = [...this.pickedNumbers, this.targetNum]
     },
   }
 };
