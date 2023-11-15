@@ -4,55 +4,66 @@
     class="tile is-ancestor"
   >
     <div
-      id="numbers-column"
-      class="tile is-8"
+      class="left-container"
     >
-      <ul class="numbers-container">
-        <li
-          v-for="n in numbers"
-          :id="[n.number]"
-          :key="n.number"
-        >
-          <transition name="fade">
-            <button
-              v-if="!n.isPicked"
-              class="bingo-number"
-              @click="n.isPicked = editable !== n.isPicked"
-            >
-              {{ n.number }}
-            </button>
-            <button
-              v-else
-              :class="['bingo-number', {picked: n.isPicked}]"
-              @click="n.isPicked = editable !== n.isPicked"
-            >
-              {{ n.number }}
-            </button>
-          </transition>
-        </li>
-        <li
-          v-for="n in presents"
-          :id="[n.number]"
-          :key="n.number"
-        >
-          <transition name="fade">
-            <button
-              v-if="!n.isPicked"
-              class="bingo-number"
-              @click="n.isPicked = editable !== n.isPicked"
-            >
-              {{ n.number }}等
-            </button>
-            <button
-              v-else
-              :class="['bingo-number', {picked: n.isPicked}]"
-              @click="n.isPicked = editable !== n.isPicked"
-            >
-              {{ n.number }}等
-            </button>
-          </transition>
-        </li>
-      </ul>
+      <div
+        id="numbers-column"
+        class="tile is-12"
+      >
+        <ul class="numbers-container">
+          <li
+            v-for="n in numbers"
+            :id="[n.number]"
+            :key="n.number"
+          >
+            <transition name="fade">
+              <button
+                v-if="!n.isPicked"
+                class="bingo-number"
+                @click="n.isPicked = editable !== n.isPicked"
+              >
+                {{ n.number }}
+              </button>
+              <button
+                v-else
+                :class="['bingo-number', {picked: n.isPicked}]"
+                @click="n.isPicked = editable !== n.isPicked"
+              >
+                {{ n.number }}
+              </button>
+            </transition>
+          </li>
+        </ul>
+      </div>
+      <div
+        id="numbers-column"
+        class="tile is-12"
+      >
+        <ul class="numbers-container">
+          <li
+            v-for="n in presents"
+            :id="[n.number]"
+            :key="n.number"
+          >
+            <transition name="fade">
+              <button
+                v-if="!n.isPicked"
+                class="bingo-present"
+                @click="n.isPicked = editable !== n.isPicked"
+              >
+                {{ n.number }}等
+              </button>
+              <button
+                v-else
+                :class="['bingo-present', {picked: n.isPicked}]"
+                @click="n.isPicked = editable !== n.isPicked"
+              >
+                {{ n.number }}等
+              </button>
+            </transition>
+          </li>
+        </ul>
+      </div>
     </div>
     <div
       id="draw-column"
@@ -147,7 +158,7 @@ export default {
       targetNum: null,
       animateTagetNum: false,
       maxNumber: 75,
-      maxPresent: 7,
+      maxPresent: 8,
       quizRate: 0.3,
       editable: false,
       numbers: [],
@@ -330,11 +341,47 @@ ul {
   align-items: center;
   justify-content: center;
 }
+.presents-container {
+  margin: 0 auto;
+  border-radius: 30px;
+  padding: 0px;
+  box-shadow: 5px 5px 20px rgba($dark, 0.3);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+.presents-container > li {
+  font-size: 20pt;
+  width: 10%;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.left-container {
+  display: flex;
+  flex-direction: column;
+}
+.box {
+  width: 80%; /* 8/12カラム相当 */
+}
 .bingo-number {
   font-size: 20pt;
   width: 60px;
   height: 60px;
   border-radius: 30px;
+  padding-top: 2px;
+  border: 1px solid rgba(#000, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bingo-present {
+  font-size: 20pt;
+  width: 120px;
+  height: 40px;
+  border-radius: 10px;
   padding-top: 2px;
   border: 1px solid rgba(#000, 0.5);
   display: flex;
