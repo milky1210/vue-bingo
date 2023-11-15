@@ -91,8 +91,14 @@
           max="1"
           step="0.01"
         >
-        <input type="number" v-model.number="maxNumber">
-        <input type="number" v-model.number="maxPresent">
+        <input
+          v-model.number="maxNumber"
+          type="number"
+        >
+        <input
+          v-model.number="maxPresent"
+          type="number"
+        >
       </div>
       <div
         id="controls"
@@ -177,12 +183,20 @@
             </b-tooltip>
           </template>
           <div>
-            <b-button
-              rounded
-              @click="showSetting=!showSetting"
+            <b-tooltip
+              label="詳細設定"
+              position="is-bottom"
+              type="is-light"
+              size="is-small"
+              delay="1000"
             >
-              <b-icon icon="settings" />
-            </b-button>
+              <b-button
+                rounded
+                @click="showSetting=!showSetting"
+              >
+                <b-icon icon="settings" />
+              </b-button>
+            </b-tooltip>
           </div>
         </div>
       </div>
