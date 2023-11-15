@@ -18,7 +18,7 @@
     </div>
     <footer class="footer">
       <div class="columns is-centered">
-        ©︎milky開発
+        ©︎milky開発 powered by larsbaunwall
       </div>
     </footer>
   </div>

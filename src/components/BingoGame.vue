@@ -81,6 +81,19 @@
           </p>
         </div>
       </div>
+      <div v-if="showSetting">
+        <label for="quiz-rate">クイズ発生率: {{ quizRate }}</label>
+        <input
+          id="quiz-rate"
+          v-model="quizRate"
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+        >
+        <input type="number" v-model.number="maxNumber">
+        <input type="number" v-model.number="maxPresent">
+      </div>
       <div
         id="controls"
         class="tile is-child"
@@ -163,6 +176,14 @@
               </b-button>
             </b-tooltip>
           </template>
+          <div>
+            <b-button
+              rounded
+              @click="showSetting=!showSetting"
+            >
+              <b-icon icon="settings" />
+            </b-button>
+          </div>
         </div>
       </div>
     </div>
@@ -182,13 +203,14 @@ export default {
       targetNum: null,
       animateTagetNum: false,
       maxNumber: 75,
-      maxPresent: 8,
+      maxPresent: 7,
       quizRate: 0.3,
       editable: false,
       numbers: [],
       presents: [],
       pickedNumbers: [],
-      pickedPresents: []
+      pickedPresents: [],
+      showSetting: false
     };
   },
   computed: {
