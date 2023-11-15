@@ -2,6 +2,14 @@
   <div
     id="app"
   >
+    <header class="header">
+      <div class="columns is-centered">
+        <img
+          class="logo"
+          src="./assets/yamana_marrige.png"
+        >
+      </div>
+    </header>
     <div
       id="mainstage"
       class="container is-fluid"
@@ -10,10 +18,7 @@
     </div>
     <footer class="footer">
       <div class="columns is-centered">
-        <img
-          class="logo"
-          src="./assets/silo-banko-logo@3x.png"
-        >
+        ©︎milky開発
       </div>
     </footer>
   </div>
@@ -43,16 +48,13 @@ export default {
 }
 .logo {
   margin: 20px;
-  width: 150px;
+  width: 300px;
   
-}
-.footer {
-  flex: 1;
 }
 
 #mainstage {
   padding: 3rem;
   border-radius: 10px;
-  background-color: white;
+  background-color: #ffffff;
 }
 </style>

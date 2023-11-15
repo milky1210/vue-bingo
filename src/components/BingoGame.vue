@@ -133,12 +133,36 @@
           >
             初期化
           </b-button>
-          <b-button
-            rounded
-            @click="editable=!editable"
+          <b-tooltip
+            label="編集"
+            position="is-bottom"
+            type="is-light"
+            size="is-small"
+            delay="1000"
           >
-            <b-icon :icon="editable ? 'pencil' : 'lock'" />
-          </b-button>
+            <b-button
+              rounded
+              @click="editable=!editable"
+            >
+              <b-icon :icon="editable ? 'pencil' : 'lock'" />
+            </b-button> 
+          </b-tooltip>
+          <template>
+            <b-tooltip
+              label="フルスクリーンにする"
+              position="is-bottom"
+              type="is-light"
+              size="is-small"
+              delay="1000"
+            >
+              <b-button
+                rounded
+                @click="goFullScreen"
+              >
+                <b-icon icon="arrow-expand" />
+              </b-button>
+            </b-tooltip>
+          </template>
         </div>
       </div>
     </div>
@@ -284,6 +308,19 @@ export default {
       }, 1000)
       this.presents[this.targetNum-1].isPicked = true;
       this.pickedPresents = [...this.pickedNumbers, this.targetNum]
+    },
+      goFullScreen: function() {
+        let element = document.documentElement;
+
+        if (element.requestFullscreen) {
+          element.requestFullscreen();
+        } else if (element.mozRequestFullScreen) { /* Firefox */
+          element.mozRequestFullScreen();
+        } else if (element.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+          element.webkitRequestFullscreen();
+        } else if (element.msRequestFullscreen) { /* IE/Edge */
+          element.msRequestFullscreen();
+        }
     },
   }
 };
