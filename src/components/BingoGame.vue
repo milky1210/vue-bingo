@@ -77,7 +77,7 @@
           class="bingo-roulette"
         >
           <p :class="['number-draw', animateTagetNum ? 'reveal-number reveal-number-animation' : '']">
-            {{ targetNum > 0 ? targetNum : 'Q' }}
+            {{ targetNum == 0 ? 'Q' : targetNum == -1 ? '💀' : targetNum }}
           </p>
         </div>
       </div>
@@ -91,6 +91,23 @@
           max="1"
           step="0.01"
         >
+        <br>
+        <label for="hazure-rate">ハズレ率: {{ hazureRate }}</label>
+        <input
+          id="hazure-rate"
+          v-model="hazureRate"
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+        >
+        <label for="autoHazure">自動更新</label>
+        <input
+          id="autoHazure"
+          v-model="autoHazure"
+          type="checkbox"
+        >
+        <br>
         <input
           v-model.number="maxNumber"
           type="number"
@@ -224,7 +241,9 @@ export default {
       presents: [],
       pickedNumbers: [],
       pickedPresents: [],
-      showSetting: false
+      showSetting: false,
+      hazureRate: 1 / 7,
+      autoHazure: true,
     };
   },
   computed: {
@@ -276,6 +295,8 @@ export default {
       }
       this.target = null;
       this.targetNum = null;
+      const availableNumbers = this.presents.filter(n => !n.isPicked); 
+      this.hazureRate = 3 / (availableNumbers.length + 3)
     },
     spin: function() {
       this.drawingInProcess = true;
@@ -312,6 +333,9 @@ export default {
         const rndDrawIdx =  Math.floor(Math.random() * availableNumbers.length);
         const draw = availableNumbers[rndDrawIdx];
         this.targetNum = draw.number;
+        if (Math.random() < this.quizRate){
+        this.targetNum = 0;
+      }
       }, 100);
     },
     stopDrawing: function() {
@@ -320,9 +344,6 @@ export default {
       setTimeout(() => {
         this.animateTagetNum = false;
       }, 1000)
-      if (Math.random() < this.quizRate){
-        this.targetNum = 0;
-      }
       if(this.targetNum>0){
       this.numbers[this.targetNum-1].isPicked = true;
       this.pickedNumbers = [...this.pickedNumbers, this.targetNum];
@@ -334,6 +355,9 @@ export default {
         const rndDrawIdx =  Math.floor(Math.random() * availableNumbers.length);
         const draw = availableNumbers[rndDrawIdx];
         this.targetNum = draw.number;
+        if (Math.random() < this.hazureRate){
+        this.targetNum = -1;
+      }
       }, 100);
     },
     stopDrawingGift: function() {
@@ -341,9 +365,15 @@ export default {
       this.animateTagetNum = true;
       setTimeout(() => {
         this.animateTagetNum = false;
-      }, 1000)
-      this.presents[this.targetNum-1].isPicked = true;
-      this.pickedPresents = [...this.pickedNumbers, this.targetNum]
+      }, 1000);
+      if(this.targetNum>0){
+        this.presents[this.targetNum-1].isPicked = true;
+        this.pickedPresents = [...this.pickedNumbers, this.targetNum];
+      };
+      if (this.autoHazure){
+        const availableNumbers = this.presents.filter(n => !n.isPicked); 
+        this.hazureRate = 3 / (availableNumbers.length + 3);
+      };
     },
       goFullScreen: function() {
         let element = document.documentElement;
